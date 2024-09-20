@@ -1,0 +1,614 @@
+Mag X: 27.00
+Mag Y: 219.00
+Mag Z: 324.00
+
+
+Mag X: 27.00
+Mag Y: 217.50
+Mag Z: 331.50
+
+
+Mag X: 24.00
+Mag Y: 223.50
+Mag Z: 330.00
+
+
+Mag X: 28.50
+Mag Y: 223.50
+Mag Z: 328.50
+
+
+Mag X: 31.50
+Mag Y: 217.50
+Mag Z: 333.00
+
+
+Mag X: 28.50
+Mag Y: 220.50
+Mag Z: 333.00
+
+
+Mag X: 31.50
+Mag Y: 219.00
+Mag Z: 327.00
+
+
+Mag X: 37.50
+Mag Y: 216.00
+Mag Z: 327.00
+
+
+Mag X: 31.50
+Mag Y: 220.50
+Mag Z: 334.50
+
+
+Mag X: 21.00
+Mag Y: 220.50
+Mag Z: 336.00
+
+
+Mag X: 25.50
+Mag Y: 214.50
+Mag Z: 334.50
+
+
+Mag X: 31.50
+Mag Y: 222.00
+Mag Z: 331.50
+
+
+Mag X: 27.00
+Mag Y: 219.00
+Mag Z: 333.00
+
+
+Mag X: 30.00
+Mag Y: 220.50
+Mag Z: 330.00
+
+
+Mag X: 78.00
+Mag Z: 342.00
+
+
+Mag X: 115.50
+Mag Y: 217.50
+Mag Z: 337.50
+
+
+Mag X: 127.50
+Mag Y: 216.00
+Mag Z: 331.50
+
+
+Mag X: 153.00
+Mag Z: 321.00
+
+
+Mag X: 172.50
+Mag Y: 201.00
+Mag Z: 313.50
+
+
+Mag X: 202.50
+Mag Y: 205.50
+Mag Z: 298.50
+
+
+Mag X: 222.00
+Mag Y: 207.00
+Mag Z: 288.00
+
+
+Mag X: 243.00
+Mag Y: 207.00
+Mag Z: 279.00
+
+
+Mag X: 244.50
+Mag Y: 205.50
+Mag Z: 274.50
+
+
+Mag X: 244.50
+Mag Y: 205.50
+Mag Z: 270.00
+
+
+Mag X: 243.00
+Mag Y: 211.50
+Mag Z: 274.50
+
+
+Mag X: 241.50
+Mag Z: 274.50
+
+
+Mag X: 241.50
+Mag Y: 205.50
+Mag Z: 276.00
+
+
+Mag X: 261.00
+Mag Y: 199.50
+Mag Z: 258.00
+
+
+Mag X: 273.00
+Mag Z: 234.00
+
+
+Mag X: 286.50
+Mag Y: 198.00
+Mag Z: 219.00
+
+
+Mag X: 291.00
+Mag Y: 199.50
+Mag Z: 202.50
+
+
+Mag X: 303.00
+Mag Y: 192.00
+
+
+Mag X: 306.00
+Mag Y: 196.50
+Mag Z: 165.00
+
+
+Mag X: 304.50
+Mag Y: 193.50
+Mag Z: 145.50
+
+
+Mag X: 312.00
+Mag Y: 195.00
+Mag Z: 129.00
+
+
+Mag X: 315.00
+Mag Y: 190.50
+Mag Z: 135.00
+
+
+Mag X: 310.50
+Mag Y: 190.50
+Mag Z: 124.50
+
+
+Mag X: 307.50
+Mag Y: 195.00
+Mag Z: 130.50
+
+
+Mag X: 312.00
+Mag Y: 190.50
+Mag Z: 97.50
+
+
+Mag X: 309.00
+Mag Y: 187.50
+Mag Z: 79.50
+
+
+Mag X: 301.50
+Mag Y: 190.50
+Mag Z: 30.00
+
+
+Mag X: 294.00
+Mag Y: 190.50
+Mag Z: -1.50
+
+
+Mag X: 286.50
+Mag Y: 190.50
+Mag Z: -16.50
+
+
+Mag X: 289.50
+Mag Y: 189.00
+Mag Z: -15.00
+
+
+Mag X: 268.50
+Mag Y: 195.00
+Mag Z: -63.00
+
+
+Mag X: 261.00
+Mag Z: -90.00
+
+
+Mag X: 258.00
+Mag Y: 189.00
+Mag Z: -97.50
+
+
+Mag X: 241.50
+Mag Y: 195.00
+Mag Z: -111.00
+
+
+Mag X: 237.00
+Mag Y: 193.50
+Mag Z: -126.00
+
+
+Mag X: 228.00
+Mag Y: 193.50
+Mag Z: -139.50
+
+
+Mag X: 225.00
+Mag Y: 183.00
+Mag Z: -139.50
+
+
+Mag X: 225.00
+Mag Z: -133.50
+
+
+Mag X: 225.00
+Mag Y: 192.00
+Mag Z: -132.00
+
+
+Mag X: 223.50
+Mag Y: 189.00
+Mag Z: -133.50
+
+
+Mag X: 223.50
+Mag Y: 192.00
+Mag Z: -141.00
+
+
+Mag X: 228.00
+Mag Y: 190.50
+Mag Z: -142.50
+
+
+Mag X: 193.50
+Mag Y: 193.50
+Mag Z: -180.00
+
+
+Mag X: 171.00
+Mag Y: 192.00
+Mag Z: -198.00
+
+
+Mag X: 139.50
+Mag Y: 192.00
+Mag Z: -219.00
+
+
+Mag X: 103.50
+Mag Z: -237.00
+
+
+Mag X: 90.00
+Mag Y: 201.00
+Mag Z: -243.00
+
+
+Mag X: 60.00
+Mag Y: 196.50
+Mag Z: -249.00
+
+
+Mag X: 54.00
+Mag Y: 195.00
+Mag Z: -253.50
+
+
+Mag X: 34.50
+Mag Y: 202.50
+Mag Z: -265.50
+
+
+Mag X: 18.00
+Mag Y: 201.00
+Mag Z: -259.50
+
+
+Mag X: 0.00
+Mag Z: -268.50
+
+
+Mag X: -12.00
+Mag Y: 210.00
+Mag Z: -265.50
+
+
+Mag X: -33.00
+Mag Y: 208.50
+Mag Z: -267.00
+
+
+Mag X: -48.00
+Mag Y: 211.50
+Mag Z: -262.50
+
+
+Mag X: -45.00
+Mag Z: -267.00
+
+
+Mag X: -72.00
+Mag Y: 207.00
+Mag Z: -261.00
+
+
+Mag X: -88.50
+Mag Y: 217.50
+Mag Z: -258.00
+
+
+Mag X: -112.50
+Mag Y: 211.50
+Mag Z: -247.50
+
+
+Mag X: -132.00
+Mag Y: 210.00
+Mag Z: -243.00
+
+
+Mag X: -142.50
+Mag Y: 214.50
+Mag Z: -235.50
+
+
+Mag X: -151.50
+Mag Y: 220.50
+Mag Z: -226.50
+
+
+Mag X: -174.00
+Mag Y: 223.50
+Mag Z: -216.00
+
+
+Mag X: -186.00
+Mag Z: -208.50
+
+
+Mag X: -202.50
+Mag Y: 222.00
+Mag Z: -180.00
+
+
+Mag X: -207.00
+Mag Y: 226.50
+Mag Z: -177.00
+
+
+Mag X: -219.00
+Mag Y: 225.00
+Mag Z: -157.50
+
+
+Mag X: -235.50
+Mag Y: 228.00
+Mag Z: -135.00
+
+
+Mag X: -235.50
+Mag Y: 231.00
+Mag Z: -118.50
+
+
+Mag X: -253.50
+Mag Y: 229.50
+Mag Z: -96.00
+
+
+Mag X: -247.50
+Mag Y: 232.50
+Mag Z: -84.00
+
+
+Mag X: -246.00
+Mag Y: 228.00
+Mag Z: -52.50
+
+
+Mag X: -247.50
+Mag Y: 231.00
+Mag Z: -28.50
+
+
+Mag X: -249.00
+Mag Y: 231.00
+Mag Z: -3.00
+
+
+Mag X: -246.00
+Mag Y: 234.00
+Mag Z: 15.00
+
+
+Mag X: -244.50
+Mag Y: 232.50
+Mag Z: 24.00
+
+
+Mag X: -244.50
+Mag Y: 237.00
+Mag Z: 43.50
+
+
+Mag X: -237.00
+Mag Y: 235.50
+Mag Z: 61.50
+
+
+Mag X: -237.00
+Mag Y: 234.00
+Mag Z: 84.00
+
+
+Mag X: -234.00
+Mag Y: 231.00
+Mag Z: 91.50
+
+
+Mag X: -231.00
+Mag Y: 234.00
+Mag Z: 88.50
+
+
+Mag X: -241.50
+Mag Y: 232.50
+Mag Z: 91.50
+
+
+Mag X: -235.50
+Mag Y: 235.50
+
+
+Mag X: -229.50
+Mag Y: 237.00
+Mag Z: 108.00
+
+
+Mag X: -213.00
+Mag Y: 241.50
+Mag Z: 139.50
+
+
+Mag X: -189.00
+Mag Y: 238.50
+Mag Z: 184.50
+
+
+Mag X: -160.50
+Mag Y: 238.50
+Mag Z: 213.00
+
+
+Mag X: -138.00
+Mag Y: 237.00
+Mag Z: 229.50
+
+
+Mag X: -108.00
+Mag Y: 234.00
+Mag Z: 262.50
+
+
+Mag X: -87.00
+Mag Y: 231.00
+Mag Z: 276.00
+
+
+Mag X: -52.50
+Mag Z: 304.50
+
+
+Mag X: -22.50
+Mag Y: 222.00
+Mag Z: 310.50
+
+
+Mag X: -9.00
+Mag Y: 226.50
+Mag Z: 322.50
+
+
+Mag X: 24.00
+Mag Y: 225.00
+Mag Z: 334.50
+
+
+Mag X: 42.00
+Mag Y: 229.50
+Mag Z: 337.50
+
+
+Mag X: 61.50
+Mag Y: 222.00
+Mag Z: 339.00
+
+
+Mag X: 78.00
+Mag Y: 220.50
+Mag Z: 340.50
+
+
+Mag X: 94.50
+Mag Y: 219.00
+Mag Z: 340.50
+
+
+Mag X: 106.50
+Mag Y: 211.50
+Mag Z: 342.00
+
+
+Mag X: 127.50
+Mag Y: 220.50
+Mag Z: 337.50
+
+
+Mag X: 121.50
+Mag Y: 216.00
+Mag Z: 339.00
+
+
+Mag X: 124.50
+Mag Y: 214.50
+Mag Z: 334.50
+
+
+Mag X: 133.50
+Mag Y: 211.50
+Mag Z: 337.50
+
+
+Mag X: 124.50
+Mag Y: 217.50
+Mag Z: 337.50
+
+
+Mag X: 126.00
+Mag Y: 216.00
+Mag Z: 337.50
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

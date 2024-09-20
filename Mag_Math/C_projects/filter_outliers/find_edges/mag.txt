@@ -1,0 +1,368 @@
+/*
+ * MAG.c
+ *
+ *  Created on: Jul 9, 2021
+ *      Author: robertm
+ */
+
+/* Includes ------------------------------------------------------------------*/
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "iis2mdc_reg.h"
+#include "MAG.h"
+#include "Scheduler.h"
+#include "I2C.h"
+#include "Console/Console.h"
+#include "motion_mc.h"
+#include <math.h>
+#include "Partition_Manager/Partition_Manager.h"
+#include "Pittsburgh.h"
+#include "UI_Manager.h"
+#include "MagCal/find_edges.h"
+
+
+extern Pittsburgh pittsburgh;
+float mag_x_val, mag_y_val, mag_z_val;
+#ifdef GET_LPF_ENABLE
+static iis2mdc_lpf_t Is_LPF_Enable = IIS2MDC_ODR_UN_INITIALIZED;
+#endif
+uint32_t TimeStamp = 0;
+
+// Private functions ----------------------------------------------------------------------
+static void IIS2MDC_Task(void *Task_Data);
+static int32_t platform_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
+//static int32_t platform_write(I2C *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
+static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
+//static int32_t platform_read(I2C *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
+static void Print_Help_Message(void);
+static void IIS2MDC_Display_Data(IIS2MDC *device);
+static bool IIS2MDC_ReadSensor(IIS2MDC *device);
+static void IIS2MDC_StartCalibration(void *DeviceHandle);
+static void IIS2MDC_StopCalibration(void *DeviceHandle);
+
+
+
+/*******************************************************************************************************
+* @brief Init the magnetometer for use.  Ready the device struct for use.  Create tasks and help menu actions
+* associated with this device
+*
+* @author original:	Hab Collector \n
+*
+* @param I2C_Bus: Pointer to the I2C bus handler
+* @param WriteFunction: Function pointer for writing to the EE NV memory
+* @param ReadFunction: Function pointer for reading from the EE NV memory
+* @param AddressCal_X: Magnetometer partition address offset for X offset calibration data
+* @param AddressCal_Y: Magnetometer partition address offset for Y offset calibration data
+*
+* @return IIS2MDC: Pointer to the IIS2MDC strut ready for use
+*
+* STEP 1: Allocate memory and Ready device struct for use
+* STEP 2: Start Magnetometer task
+* STEP 3: Add Console help commands
+* STEP 4: Return device struct pointer
+********************************************************************************************************/
+IIS2MDC * Init_Magnetometer(I2C *I2C_Bus, FunctionWrite_NVM WriteFunction, FunctionRead_NVM ReadFunction, uint32_t AddressCal_X, uint32_t AddressCal_Y)
+{
+	// STEP 1: Allocate memory and Ready Device struct for use
+	IIS2MDC *Device = (IIS2MDC*) malloc(sizeof(IIS2MDC));
+	if (Device != NULL)
+	{
+		Device->Bus_Handle = I2C_Bus;
+		Device->stmdev.write_reg = platform_write; // Write via I2C to generic register AKA I2C_Memory_Write
+		Device->stmdev.read_reg = platform_read;
+		Device->stmdev.handle = I2C_Bus;
+		Device->Current_State = eIIS2MDC_PowerOnBoot;
+		// Offset Calibration from memory
+		Device->write_NVM = WriteFunction; // EEPROM CAT24M01 Write AKA Memory_Drive_Write
+		Device->read_NVM = ReadFunction;
+		Device->AddressMagCal_X = AddressCal_X;
+		Device->AddressMagCal_Y = AddressCal_Y;
+	}
+
+	// STEP 2: Start Magnetometer task
+	Device->Task_ID = Start_Task(IIS2MDC_Task, (void*) Device, MAGNETOMETER_SAMPLE_TIME);
+	Set_Task_Name(Device->Task_ID, "Mag Angle Task");
+
+	// STEP 3: Add Console help commands
+	Add_Console_Top_Level_Command("IIS2MDC", "Magnetometer Commands", NULL, NULL);
+	Add_Console_Complete_Command("IIS2MDC help", Print_Help_Message, NULL);
+	Add_Console_Repeat_Command("IIS2MDC Show XYZ", IIS2MDC_Display_Data, (void *)Device, 500);
+	Add_Console_Debug_Command("IIS2MDC Calibrate", IIS2MDC_StartCalibration, IIS2MDC_StopCalibration, (void *)Device);
+
+	// STEP 4: Return Device struct pointer
+	return(Device);
+
+} // END OF Mag_Init
+
+
+
+/*******************************************************************************************************
+* @brief This is the magnetometer task.  The task is implemented as a state machine.  The active state runs
+* whenever the task is called.  The states cover POR, Device Init, Polling (the normal state) and calibration.
+* It is necessary for a new device to be calibrated before use. The calibration values are stored to EE NV
+* as such the calibration need only be performed once and is otherwise oblivious to application firmware
+* updates.
+*
+* @author original:	Hab Collector \n
+*
+* @param Task_Data: IIS2MDC Device Handle
+*
+* @return void
+*
+* STATES:
+* eIIS2MDC_PowerOnBoot: Power on Boot Delay minimum is 5ms - this will be 20ms
+* eIIS2MDC_Initializing: Verify device, Restore default config, Set configuration values, Load Calibration Values
+* eIIS2MDC_Polling: Read sensor magnetic fields, Update and apply calibration parameters as compiled
+* eIIS2MDC_StartCalibration: Set conditions to begin hard iron calibration
+* eIIS2MDC_Calibrating: Determine min max limits of X, Y 2D fields
+* eIIS2MDC_StopCalibration: Calculate Cal X, Y data save to NVM and return to polling
+********************************************************************************************************/
+static void IIS2MDC_Task(void *Task_Data)
+{
+	IIS2MDC *device = (IIS2MDC*) Task_Data;
+	static float Max_X_MagField = 0;
+	static float Min_X_MagField = 0;
+	static float Max_Y_MagField = 0;
+	static float Min_Y_MagField = 0;
+	
+	buffer_linked_list * BLL_x_max = init_buffer_LL(X_coor, Max_list);
+	buffer_linked_list * BLL_y_max = init_buffer_LL(Y_coor, Max_list);
+	buffer_linked_list * BLL_x_min = init_buffer_LL(X_coor, Min_list);
+	buffer_linked_list * BLL_y_min = init_buffer_LL(Y_coor, Min_list);
+	
+
+	switch(device->Current_State)
+	{
+	// Power on Boot Delay minimum is 5ms - this will be 20ms
+	case eIIS2MDC_PowerOnBoot:
+	{
+		device->Current_State = eIIS2MDC_Initializing;
+	}
+	break;
+
+	// Verify device, Restore default config, Set configuration values, Load Calibration Values
+	case eIIS2MDC_Initializing:
+	{
+		// VERIFY DEVICE ID
+		uint8_t WhoAmI = (uint8_t)(~IIS2MDC_ID);
+		uint32_t IIS2MDC_InitStatus = IIS2MDC_OK;
+		iis2mdc_device_id_get(&device->stmdev, &WhoAmI);
+		if (WhoAmI != IIS2MDC_ID)
+		{
+			device->Current_State = eIIS2MDC_PowerOnBoot;
+			break;
+		}
+
+		// RESTORE DEFAULT CONFIGURATION: By issuing reset - Wait for reset to complete
+		uint8_t ResetState;
+		uint8_t ReTryAttempts = 5;
+		iis2mdc_reset_set(&device->stmdev, PROPERTY_ENABLE);
+		do
+		{
+			HAL_Delay(MAGNETOMETER_RESPONSE_TIMEOUT);
+			iis2mdc_reset_get(&device->stmdev, &ResetState);
+		} while ((ResetState) && (--ReTryAttempts));
+		if (ResetState)
+			IIS2MDC_InitStatus = IIS2MDC_ERROR;
+
+		// CONFIGURE DEVICE FOR USE
+		// Offset Cancellation Enable
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_set_rst_mode_set(&device->stmdev, IIS2MDC_SENS_OFF_CANC_EVERY_ODR); // sets the cancellation offset to be per 63 ODRs
+		// Low Pass Filter Enable
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_low_pass_bandwidth_set(&device->stmdev, PROPERTY_ENABLE); //sets low pass filter
+		// debug to see if LPF enabled, since important
+
+#ifdef GET_LPF_ENABLE
+		if (IIS2MDC_InitStatus == IIS2MDC_OK){
+			iis2mdc_lpf_t * enable_ptr;
+			enable_ptr = &Is_LPF_Enable;
+			IIS2MDC_InitStatus = iis2mdc_low_pass_bandwidth_get(&device->stmdev, enable_ptr);
+			printf("1 is on, 0 is off, -1 means get failed; GET_LPF_ENABLE = %d\r\n", (int)Is_LPF_Enable);
+		}
+#endif
+
+		// Block Data Update Enable
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_block_data_update_set(&device->stmdev, PROPERTY_ENABLE);
+		// Route DRDY Signal to DRDY / IRQ Pin
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_drdy_on_pin_set(&device->stmdev, PROPERTY_ENABLE);
+		// Set Output Data Rate to 10Hz
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_data_rate_set(&device->stmdev, IIS2MDC_ODR_10Hz);
+		// Set device in continuous mode
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_operating_mode_set(&device->stmdev, IIS2MDC_CONTINUOUS_MODE);
+#ifdef IIS2MDC_TEMP_CONFIG
+		// Enable temperature compensation
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			IIS2MDC_InitStatus = iis2mdc_offset_temp_comp_set(&device->stmdev, PROPERTY_ENABLE);
+#endif
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+			printf("IIS2MDC Magnetometer Config OK\r\n");
+		else
+			printf("IIS2MDC Magnetometer Config Error\r\n");
+
+		// INIT ST MotionMC CALIBRATION DRIVER
+#ifdef IIS2MDC_USE_CALIBRATION
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+		{
+			MotionMC_Initialize(MAGNETOMETER_SAMPLE_TIME, PROPERTY_ENABLE);
+			char MotionMCVer[MOTION_MC_VER_BUFFER_SIZE];
+			uint8_t StringCompareLength;
+			MotionMC_GetLibVersion(MotionMCVer);
+			StringCompareLength = strlen((char *)FIRMWARE_MOTION_MC_VER);
+			MotionMCVer[StringCompareLength] = '\0';
+			if (strcmp(MotionMCVer, FIRMWARE_MOTION_MC_VER) == 0)
+			{
+				IIS2MDC_InitStatus = IIS2MDC_OK;
+				printf("IIS2MDC Calibration Init OK\r\n");
+			}
+			else
+			{
+				IIS2MDC_InitStatus = IIS2MDC_ERROR;
+				printf("IIS2MDC Calibration Init Error\r\n");
+			}
+		}
+#endif
+
+		// Advance to next state and read cal data if no configuration errors. Restart sequence on errors
+		if (IIS2MDC_InitStatus == IIS2MDC_OK)
+		{
+			device->Current_State = eIIS2MDC_Polling;
+			device->read_NVM(device->AddressMagCal_X, (uint8_t *)&device->MagCal_X_Offset, sizeof(float));
+			device->read_NVM(device->AddressMagCal_Y, (uint8_t *)&device->MagCal_Y_Offset, sizeof(float));
+		}
+		else
+		{
+			device->Current_State = eIIS2MDC_PowerOnBoot;
+		}
+	}
+	break;
+
+	// Read sensor magnetic fields, Update and apply calibration parameters as compiled
+	case eIIS2MDC_Polling:
+	{
+		if (IIS2MDC_ReadSensor(device) == true)
+		{
+#ifdef IIS2MDC_USE_CALIBRATION
+			MMC_Input_t Data_In;
+			MMC_Output_t Data_Out;
+			// Load data struct for Magnetometer calibration algo update mGauss is converted to uTesla - see app notes
+			Data_In.Mag[0] = device->magnetic_mG[0] / 10.0;
+			Data_In.Mag[1] = device->magnetic_mG[1] / 10.0;
+			Data_In.Mag[2] = device->magnetic_mG[2] / 10.0;
+			Data_In.TimeStamp = TimeStamp * MAGNETOMETER_SAMPLE_TIME;
+			TimeStamp++;
+			// Magnetometer calibration algo update
+			MotionMC_Update(&Data_In);
+			// Get Magnetometer calibration coefficients
+			MotionMC_GetCalParams(&Data_Out);
+			// Apply the calibration coefficients
+			float mag_cal_x, mag_cal_y, mag_cal_z;
+			mag_cal_x = (float)((Data_In.Mag[0] - Data_Out.HI_Bias[0]) * Data_Out.SF_Matrix[0][0] 	\
+						+ (Data_In.Mag[1] - Data_Out.HI_Bias[1]) * Data_Out.SF_Matrix[0][1]			\
+						+ (Data_In.Mag[2] - Data_Out.HI_Bias[2]) * Data_Out.SF_Matrix[0][2]);
+			mag_cal_y = (float)((Data_In.Mag[0] - Data_Out.HI_Bias[0]) * Data_Out.SF_Matrix[1][0]	\
+						+ (Data_In.Mag[1] - Data_Out.HI_Bias[1]) * Data_Out.SF_Matrix[1][1]			\
+						+ (Data_In.Mag[2] - Data_Out.HI_Bias[2]) * Data_Out.SF_Matrix[1][2]);
+			mag_cal_z = (float)((Data_In.Mag[0] - Data_Out.HI_Bias[0]) * Data_Out.SF_Matrix[2][0]	\
+						+ (Data_In.Mag[1] - Data_Out.HI_Bias[1]) * Data_Out.SF_Matrix[2][1]			\
+						+ (Data_In.Mag[2] - Data_Out.HI_Bias[2]) * Data_Out.SF_Matrix[2][2]);
+			// TODO: Hab Make global assignments directly
+			mag_x_val = mag_cal_x;
+			mag_y_val = mag_cal_y;
+			mag_z_val = mag_cal_z;
+#else
+			mag_x_val = device->magnetic_mG[0];
+			mag_y_val = device->magnetic_mG[1];
+			mag_z_val = device->magnetic_mG[2];
+#endif
+		}
+	}
+	break;
+
+	// Set conditions to begin hard iron calibration
+	case eIIS2MDC_StartCalibration:
+	{
+		printf("IIS2MDC Calibrating: Rotate TDC 3x times about its center axis\r\n");
+		// Set min max to conditions they can never be so they will be overwritten by calibration
+		Max_X_MagField = -1000000;
+		Min_X_MagField = 1000000;
+		Max_Y_MagField = -1000000;
+		Min_Y_MagField = 1000000;
+		device->MagCal_X_Offset = 0;
+		device->MagCal_Y_Offset = 0;
+		device->Current_State = eIIS2MDC_Calibrating;
+	}
+	break;
+
+	// Determine min max limits of X, Y 2D fields
+	case eIIS2MDC_Calibrating:
+	{
+		if (IIS2MDC_ReadSensor(device) == true)
+		{
+			printf("Calibrating...")
+			point * new_pt_x_max = init_point(device->magnetic_mG[0], device->magnetic_mG[2]);
+			point * new_pt_y_max = init_point(device->magnetic_mG[0], device->magnetic_mG[2]);
+			point * new_pt_x_min = init_point(device->magnetic_mG[0], device->magnetic_mG[2]);
+			point * new_pt_y_min = init_point(device->magnetic_mG[0], device->magnetic_mG[2]);
+			BLL_x_max->add(BLL_x_max, new_pt_x_max);
+			BLL_y_max->add(BLL_y_max, new_pt_y_max);
+			BLL_x_min->add(BLL_x_min, new_pt_x_min);
+			BLL_y_min->add(BLL_y_min, new_pt_y_min);
+			
+			mag_x_val = device->magnetic_mG[0];
+			mag_y_val = device->magnetic_mG[1];
+			mag_z_val = device->magnetic_mG[2];
+			IIS2MDC_Display_Data(device);
+			
+			/*
+			mag_x_val = device->magnetic_mG[0];
+			mag_y_val = device->magnetic_mG[1];
+			mag_z_val = device->magnetic_mG[2];
+			IIS2MDC_Display_Data(device);
+			Max_X_MagField = (device->magnetic_mG[0] > Max_X_MagField)? device->magnetic_mG[0] : Max_X_MagField;
+			Min_X_MagField = (device->magnetic_mG[0] < Min_X_MagField)? device->magnetic_mG[0] : Min_X_MagField;
+			Max_Y_MagField = (device->magnetic_mG[2] > Max_Y_MagField)? device->magnetic_mG[2] : Max_Y_MagField;
+			Min_Y_MagField = (device->magnetic_mG[2] < Min_Y_MagField)? device->magnetic_mG[2] : Min_Y_MagField;
+			*/
+		}
+	}
+	break;
+
+	// Calculate Cal X, Y data save to NVM and return to polling
+	case eIIS2MDC_StopCalibration:
+	{
+		Max_X_MagField = find_border(BLL_x_max);
+		Min_X_MagField = find_border(BLL_x_min);
+		Max_Y_MagField = find_border(BLL_y_max);
+		Min_Y_MagField = find_border(BLL_y_min);
+		free_buffer_LL(BLL_x_max);
+		free_buffer_LL(BLL_y_max);
+		free_buffer_LL(BLL_x_min);
+		free_buffer_LL(BLL_y_min);
+		
+		printf("X Max: %f, X Min: %f, Y Max: %f, Y Min: %f", Max_X_MagField, Min_X_MagField, Max_Y_MagField, Min_Y_MagField);
+		device->MagCal_X_Offset = -(Max_X_MagField + Min_X_MagField) / 2.0;
+		device->MagCal_Y_Offset = -(Max_Y_MagField + Min_Y_MagField) / 2.0;
+		printf("IIS2MDC Calibration Stop\r\n");
+		printf("X Calibration Offset: %2.3f\r\n", device->MagCal_X_Offset);
+		printf("Y Calibration Offset: %2.3f\r\n", device->MagCal_Y_Offset);
+		device->write_NVM(device->AddressMagCal_X, (uint8_t *)&device->MagCal_X_Offset, sizeof(float));
+		device->write_NVM(device->AddressMagCal_Y, (uint8_t *)&device->MagCal_Y_Offset, sizeof(float));
+		device->Current_State = eIIS2MDC_Polling;
+		
+	}
+	break;
+
+	default:
+		break;
+	} // END OF SWITCH
+
+} // END OF IIS2MDC_Task
+

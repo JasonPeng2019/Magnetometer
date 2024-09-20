@@ -1,0 +1,43 @@
+Mag X: 264.00
+Mag Y: 196.50
+Mag Z: 213.00
+
+
+Mag X: 265.50
+Mag Y: 195.00
+Mag Z: 213.00
+
+
+Mag X: 262.50
+Mag Y: 199.50
+Mag Z: 211.50
+
+
+Mag X: 267.00
+Mag Y: 198.00
+Mag Z: 214.50
+
+
+Mag X: 270.00
+Mag Y: 192.00
+Mag Z: 207.00
+
+
+Mag X: 270.00
+Mag Y: 192.00
+Mag Z: 207.00
+
+
+Mag X: 262.50
+Mag Y: 192.00
+Mag Z: 207.00
+
+
+Mag X: 256.50
+Mag Y: 187.50
+Mag Z: 214.50
+
+
+Mag X: 256.50
+Mag Y: 204.00
+Mag Z: 208.50

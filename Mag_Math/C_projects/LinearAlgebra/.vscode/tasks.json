@@ -1,0 +1,32 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe build all files in workspace",
+            "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",              // Include all .c files in workspace folder
+                "CLapack/Routines/*.c",                   // Include all .c files in Routine
+                "-o",
+                "${workspaceFolder}/eig_generalized.exe",  // Output executable
+                "-L",
+                "C:\\msys64\\mingw64\\lib",                // Library path
+                "-lf2c",                                   // Link with f2c library
+                "-mconsole"                                // Treat as console application
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"                 // Set current working directory
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Task to build and link all C files in the workspace."
+        }
+    ],
+    "version": "2.0.0"
+}

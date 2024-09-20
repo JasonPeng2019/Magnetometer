@@ -1,0 +1,26 @@
+TDC 1:
+
+Command: X Max: 288.000000, X Min: -259.000000, Y Max: 334.000000, Y Min: -192.000000
+X Calibration Offset: -14.500
+Y Calibration Offset: -71.000
+
+error at max: 14.5 degrees off
+
+TDC 2:
+
+Command: X Max: 372.000000, X Min: -181.000000, Y Max: 214.000000, Y Min: -325.000000
+X Calibration Offset: -95.500
+Y Calibration Offset: 55.500
+
+error at max: 22.5 degrees off
+
+TDC 3:
+
+Command: X Max: 703.000000, X Min: 151.000000, Y Max: 237.000000, Y Min: -301.000000
+X Calibration Offset: -427.000
+Y Calibration Offset: 32.000
+error at max: 180 degrees off
+
+Conclusion: getting in house calibration can help drastically with the TDC without pole, but on pole the calibration doesn't make a difference because the distortion is so large anyways
+
+

@@ -1,0 +1,55 @@
+Offsets Trial 1, TDC A
+X Max: 252.000000, X Min: -282.000000, Y Max: 286.000000, Y Min: -231.000000
+Xrange: +/- 267
+Yrange: +/- 258.5
+X Calibration Offset: 18.000
+Y Calibration Offset: -29.000
+
+Trial 2, TDC A
+X Max: 247.000000, X Min: -282.000000, Y Max: 286.000000, Y Min: -232.000000
+Xrange: +/- 264.5
+Yrange: +/- 259
+X Calibration Offset: 17.500
+Y Calibration Offset: -27.000
+
+***************************************************************************
+
+Trial 1, TDC B
+Command: X Max: 360.000000, X Min: -175.000000, Y Max: 207.000000, Y Min: -322.000000
+Xrange: +/- 267.5
+Yrange: +/- 264.5
+X Calibration Offset: -92.500
+Y Calibration Offset: 57.500
+
+Trial 2, TDC B
+Command: X Max: 364.000000, X Min: -184.000000, Y Max: 214.000000, Y Min: -322.000000
+Xrange: +/- 274
+Yrange: +/- 281.5
+X Calibration Offset: -90.000
+Y Calibration Offset: 54.000
+
+***************************************************************************
+
+Trial 1, TDC C
+X Max: 240.000000, X Min: -326.500000, Y Max: 344.000000, Y Min: -215.000000
+Xrange: +/- 283.5
+Yrange: +/- 279.5
+X Calibration Offset: 36.500
+Y Calibration Offset: -64.500
+
+
+Trial 2, TDC C
+
+Command: X Max: 252.000000, X Min: -328.000000, Y Max: 342.000000, Y Min: -217.000000
+Xrange: +/- 290
+Yrange: +/- 279.5
+X Calibration Offset: 38.000
+Y Calibration Offset: -62.500
+
+
+
+Trial 3, TDC 1, On brown desk
+Command: X Max: 187.000000, X Min: -226.000000, Y Max: 234.000000, Y Min: -166.000000IIS2MDC Calibration Stop
+X Calibration Offset: 19.500
+Y Calibration Offset: -34.000
+

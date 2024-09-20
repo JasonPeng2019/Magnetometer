@@ -1,0 +1,9 @@
+16:52:24 **** Build of configuration Debug for project Reverse_3 ****
+make all 
+Cannot run program "make": Launching failed
+
+Error: Program "make" not found in PATH
+PATH=[C:/ST/STM32CubeIDE_1.8.0/STM32CubeIDE//plugins/com.st.stm32cube.ide.jre.win64_2.0.100.202110150814/jre/bin/client;C:/ST/STM32CubeIDE_1.8.0/STM32CubeIDE//plugins/com.st.stm32cube.ide.jre.win64_2.0.100.202110150814/jre/bin;c:\Users\jason.peng\AppData\Local\Programs\cursor\resources\app\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\doxygen\bin;C:\Program Files (x86)\STMicroelectronics\STM32 ST-LINK Utility\ST-LINK Utility;C:\msys64\mingw64\bin;C:\Users\jason.peng\AppData\Local\Programs\Python\Launcher\;C:\Users\jason.peng\AppData\Local\Microsoft\WindowsApps;C:\Users\jason.peng\AppData\Local\Programs\Git\cmd;C:\msys64\ucrt64\bin;c:\Users\jason.peng\AppData\Local\Programs\cursor\resources\app\bin;c:\Users\jason.peng\AppData\Local\Programs\cursor\resources\app\bin;C:\Program Files\Microsoft VS Code\bin;C:\Users\jason.peng\AppData\Local\Programs\Python\Launcher\;C:\Users\jason.peng\AppData\Local\Microsoft\WindowsApps;C:\Users\jason.peng\AppData\Local\Programs\Git\cmd;C:\msys64\ucrt64\bin;C:\ST\STM32CubeIDE_1.8.0\STM32CubeIDE]
+
+16:52:24 Build Failed. 1 errors, 0 warnings. (took 151ms)
+

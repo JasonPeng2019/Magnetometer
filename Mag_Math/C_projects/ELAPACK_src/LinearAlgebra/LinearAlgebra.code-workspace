@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Lapack"
+		},
+		{
+			"path": "../qpOASES"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"declarefunctions.h": "c"
+		}
+	}
+}
